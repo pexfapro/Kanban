@@ -2,12 +2,31 @@
   "timezone": "Europe/London",
   "project_id": "6gm33Rmg3w725pq3",
   "week": {
-    "mon": "TBC",
-    "tue": "TBC",
-    "wed": "TBC",
-    "thu": "TBC",
-    "fri": "TBC",
+    "mon": "office",
+    "tue": "wfh",
+    "wed": "office",
+    "thu": "wfh",
+    "fri": "office",
     "sat": "off",
     "sun": "off"
+  },
+  "calendar": {
+    "source": "ics",
+    "secret_name": "CALENDAR_ICS_URL",
+    "titles": {
+      "office": [
+        "Office",
+        "Office day"
+      ],
+      "wfh": [
+        "WFH",
+        "Work from home"
+      ],
+      "off": [
+        "Off",
+        "Day off",
+        "Annual leave"
+      ]
+    }
   }
 }

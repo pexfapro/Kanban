@@ -39,7 +39,14 @@ Precedence, highest first:
    `Day: off`, due on the date it applies to. Can be created days ahead from
    the iPhone (e.g. a bank holiday). The script parks it in Not today and
    deletes override tasks whose date has passed.
-2. **Calendar** (phase 2, later): an all-day event named Office / WFH / Off.
+2. **Calendar**: an all-day event in Paul's Outlook calendar whose title
+   matches one of the names in `config.json` → `calendar.titles`
+   (exact match, case-insensitive: Office, WFH, Off, Annual leave …).
+   Read from the calendar's published ICS link, stored as the GitHub secret
+   `CALENDAR_ICS_URL` (the link gives read access to the calendar, so it is
+   treated like a password). v1 reads one-off all-day events; recurring
+   events are not needed because the weekly pattern covers the routine.
+   If the link can't be fetched, the script logs it and falls back to step 3.
 3. **Weekly pattern** from `config.json` (default).
 
 Time zone: Europe/London.
@@ -57,7 +64,8 @@ Time zone: Europe/London.
   Never committed.
 
 ## Open items
-- [ ] Paul's default weekly pattern (which weekday is which type).
-- [ ] Confirm or correct the slot for each Routine task (concept page has guesses).
+- [x] Weekly pattern: Mon office, Tue WFH, Wed office, Thu WFH, Fri office.
+- [x] Slot guesses on the concept page accepted as the starting point.
+- [ ] Publish the Outlook calendar as ICS and check event titles appear in it.
 - [ ] Verify current Todoist API endpoints for listing tasks and moving a task
       to another section before writing the client.
