@@ -1,0 +1,136 @@
+{
+  "sections": [
+    {
+      "id": "s_habits",
+      "name": "Habits"
+    },
+    {
+      "id": "s_any",
+      "name": "Anytime"
+    },
+    {
+      "id": "s_morn",
+      "name": "Morning"
+    },
+    {
+      "id": "s_aft",
+      "name": "Afternoon"
+    },
+    {
+      "id": "s_eve",
+      "name": "Evening"
+    },
+    {
+      "id": "s_wind",
+      "name": "Wind down"
+    },
+    {
+      "id": "s_not",
+      "name": "Not today"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "t0",
+      "content": "10-min morning plan",
+      "description": "Existing notes.\noffice: morning | wfh: morning | off: skip",
+      "section_id": null,
+      "parent_id": null,
+      "due": {
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "t1",
+      "content": "Mindfulness / meditation",
+      "description": "Existing notes.\noffice: wind down | wfh: morning | off: morning",
+      "section_id": null,
+      "parent_id": null,
+      "due": null
+    },
+    {
+      "id": "t2",
+      "content": "Read a tiny bit everyday",
+      "description": "Existing notes.\noffice: morning | wfh: wind down | off: afternoon",
+      "section_id": "s_habits",
+      "parent_id": null,
+      "due": null
+    },
+    {
+      "id": "t3",
+      "content": "YNAB daily",
+      "description": "Existing notes.\noffice: evening | wfh: afternoon | off: morning",
+      "section_id": "s_habits",
+      "parent_id": null,
+      "due": null
+    },
+    {
+      "id": "t4",
+      "content": "Daily Processing",
+      "description": "Existing notes.\noffice: skip | wfh: afternoon | off: morning",
+      "section_id": "s_habits",
+      "parent_id": null,
+      "due": null
+    },
+    {
+      "id": "t5",
+      "content": "Process fleeting and literature notes",
+      "description": "Existing notes.\noffice: anytime | wfh: afternoon | off: morning",
+      "section_id": null,
+      "parent_id": null,
+      "due": null
+    },
+    {
+      "id": "t6",
+      "content": "APM PFQ",
+      "description": "Existing notes.\noffice: evening | wfh: evening | off: morning",
+      "section_id": "s_eve",
+      "parent_id": null,
+      "due": null
+    },
+    {
+      "id": "t7",
+      "content": "Check for Techniche email",
+      "description": "Existing notes.\noffice: anytime | wfh: anytime | off: anytime",
+      "section_id": null,
+      "parent_id": null,
+      "due": {
+        "date": "2026-11-19"
+      }
+    },
+    {
+      "id": "t8",
+      "content": "Open bedroom windows to prepare environment for sleep",
+      "description": "Existing notes.\noffice: wind down | wfh: wind down | off: wind down",
+      "section_id": null,
+      "parent_id": null,
+      "due": null
+    },
+    {
+      "id": "t_sub",
+      "content": "Write up the 3 week body clock reset from Mosley book",
+      "description": "",
+      "section_id": "s_habits",
+      "parent_id": "t4",
+      "due": null
+    },
+    {
+      "id": "t_1000",
+      "content": "1000>1",
+      "description": "",
+      "section_id": "s_habits",
+      "parent_id": null,
+      "due": null
+    },
+    {
+      "id": "t_weekly",
+      "content": "Weekly review (30 min)",
+      "description": "1. Inbox to 0",
+      "section_id": null,
+      "parent_id": null,
+      "due": {
+        "date": "2026-11-21T07:15:00"
+      }
+    }
+  ]
+}
