@@ -24,6 +24,8 @@ summer). Now in a week of real use before tuning.
   - Failure alerts: GitHub iPhone app, Workflow Runs + Failed Workflows
     Only. Tested with a deliberate failing run (#3, session branch, reverted);
     the push arrived.
+  - Status card: first column of the board shows today's day type and its
+    source (weekly pattern / override), retitled each morning. 27 tests.
   - Week-1 aids: Inbox task "Sorter notes" (comment on it when a card lands
     wrong); one-off scheduled review Thu 26 Nov 12:40 sends a report and
     the Session 4 prompt.
@@ -39,6 +41,9 @@ summer). Now in a week of real use before tuning.
 - 19 Nov 2026: Runs on GitHub Actions in this repo; Routine project only.
 - 19 Nov 2026: Read, YNAB and Daily Processing get slot lines and leave
   Habits each day; `1000>1` stays put.
+- 19 Nov 2026: Add a status card showing today's day type - because the
+  board gave no sign of which day it was sorted for. The card is the one
+  task whose content the script edits.
 - 19 Nov 2026: Create a `main` branch and make it the default - because
   scheduled workflows only run from the default branch, and the old default
   was Session 1's design-only branch.

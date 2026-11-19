@@ -155,9 +155,6 @@ class Cli(unittest.TestCase):
         self.assertIn("'Daily Processing': Habits -> Not today", out)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 
 class Retry(unittest.TestCase):
     """The API client retries brief Todoist outages (fake network, no sleep)."""
@@ -201,3 +198,43 @@ class Retry(unittest.TestCase):
     def test_repeat_delete_404_counts_as_done(self):
         result, n = self.call([self.http(502), self.http(404)], "DELETE")
         self.assertEqual((result, n), (None, 2))
+
+
+class StatusCard(unittest.TestCase):
+    def card(self, content):
+        return task(content, sorter.STATUS_DESCRIPTION)
+
+    def test_title(self):
+        self.assertEqual(sorter.status_title("wfh", THU, False),
+                         "* 🏠 WFH day · Thu 19 Nov (weekly pattern)")
+        self.assertEqual(sorter.status_title("off", FRI, True),
+                         "* 🌴 Off day · Fri 20 Nov (override)")
+
+    def test_created_when_missing(self):
+        a = sorter.plan_status([task("YNAB")], "office", FRI, False)
+        self.assertEqual((a.kind, a.content),
+                         ("status-create", "* 🏢 Office day · Fri 20 Nov (weekly pattern)"))
+
+    def test_retitled_when_stale_and_left_when_current(self):
+        stale = self.card("* 🏠 WFH day · Thu 19 Nov (weekly pattern)")
+        a = sorter.plan_status([stale], "office", FRI, False)
+        self.assertEqual((a.kind, a.task, a.content),
+                         ("status-update", stale,
+                          "* 🏢 Office day · Fri 20 Nov (weekly pattern)"))
+        self.assertIsNone(sorter.plan_status([stale], "wfh", THU, False))
+
+    def test_never_moved_by_planner(self):
+        card = self.card("* 🏠 WFH day · Thu 19 Nov (weekly pattern)")
+        card["description"] += "\noffice: morning | wfh: morning | off: morning"
+        self.assertEqual(sorter.plan([card], SECTIONS, "wfh", THU)[0], [])
+
+    def test_cli_reports_status(self):
+        out = io.StringIO()
+        with redirect_stdout(out):
+            sorter.main(["--fixture", str(FIXTURE), "--date", "2026-11-21"])
+        self.assertIn("status  create '* 🌴 Off day · Sat 21 Nov (weekly pattern)'",
+                      out.getvalue())
+
+
+if __name__ == "__main__":
+    unittest.main()

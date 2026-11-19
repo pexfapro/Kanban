@@ -34,6 +34,13 @@ from zoneinfo import ZoneInfo
 API_BASE = "https://api.todoist.com/api/v1"
 NOT_TODAY = "Not today"
 RETRY_WAITS = (5, 15, 45)  # seconds between attempts on a transient error
+
+# The status card: one task the sorter owns, showing today's day type.
+# Found by this marker in its description. "* " makes it uncompletable.
+STATUS_MARKER = "Managed by the day-type sorter"
+STATUS_DESCRIPTION = (f"{STATUS_MARKER}: shows today's day type and where it "
+                      "came from. Rewritten each morning; no need to edit it.")
+DAY_LABELS = {"office": "🏢 Office", "wfh": "🏠 WFH", "off": "🌴 Off"}
 DAY_TYPES = ("office", "wfh", "off")
 WEEKDAYS = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 
@@ -128,9 +135,10 @@ def resolve_day_type(tasks, today, config):
 
 @dataclass
 class Action:
-    kind: str          # "move" or "delete"
+    kind: str          # "move", "delete", "status-create" or "status-update"
     task: dict
     section: str = ""  # target section name, for moves
+    content: str = ""  # new title, for status card actions
     reason: str = ""
 
 
@@ -159,8 +167,8 @@ def plan(tasks, sections, day_type, today):
 
     for task in tasks:
         title = task.get("content", "")
-        if task.get("parent_id"):
-            continue  # subtasks follow their parent
+        if task.get("parent_id") or is_status_card(task):
+            continue  # subtasks follow their parent; the card stays put
 
         override = override_day_type(task)
         if override:
@@ -186,6 +194,27 @@ def plan(tasks, sections, day_type, today):
         move_to(task, SLOT_SECTIONS[slot], f"{day_type}: {slot}")
 
     return actions, notes, by_id
+
+
+def is_status_card(task):
+    return STATUS_MARKER in (task.get("description") or "")
+
+
+def status_title(day_type, today, from_override):
+    source = "override" if from_override else "weekly pattern"
+    return (f"* {DAY_LABELS[day_type]} day · "
+            f"{today:%a} {today.day} {today:%b} ({source})")
+
+
+def plan_status(tasks, day_type, today, from_override):
+    """Create or retitle the status card. Returns an Action or None."""
+    title = status_title(day_type, today, from_override)
+    cards = [t for t in tasks if is_status_card(t)]
+    if not cards:
+        return Action("status-create", {"content": title}, content=title)
+    if cards[0].get("content") != title:
+        return Action("status-update", cards[0], content=title)
+    return None
 
 
 # ---------------------------------------------------------------- Todoist API
@@ -251,6 +280,14 @@ class Todoist:
     def delete(self, task_id):
         self._request("DELETE", f"/tasks/{task_id}")
 
+    def create(self, project_id, content, description):
+        self._request("POST", "/tasks", body={
+            "project_id": project_id, "content": content,
+            "description": description})
+
+    def rename(self, task_id, content):
+        self._request("POST", f"/tasks/{task_id}", body={"content": content})
+
 
 # ---------------------------------------------------------------- CLI
 
@@ -282,6 +319,10 @@ def main(argv=None):
 
     day_type, source = resolve_day_type(tasks, today, config)
     actions, notes, section_names = plan(tasks, sections, day_type, today)
+    status = plan_status(tasks, day_type, today,
+                         source.startswith("override"))
+    if status:
+        actions.append(status)
 
     mode = "DRY RUN" if dry_run else "LIVE"
     print(f"[{mode}] {today:%a %d %b %Y}: day type {day_type.upper()} "
@@ -297,10 +338,18 @@ def main(argv=None):
             if not dry_run:
                 api.move(a.task["id"], next(s["id"] for s in sections
                                             if s["name"] == a.section))
-        else:
+        elif a.kind == "delete":
             print(f"  delete  {title!r}  [{a.reason}]")
             if not dry_run:
                 api.delete(a.task["id"])
+        elif a.kind == "status-create":
+            print(f"  status  create {a.content!r}")
+            if not dry_run:
+                api.create(config["project_id"], a.content, STATUS_DESCRIPTION)
+        else:
+            print(f"  status  {title!r} -> {a.content!r}")
+            if not dry_run:
+                api.rename(a.task["id"], a.content)
     for n in notes:
         print(f"  note    {n}")
     verb = "planned" if dry_run else "done"

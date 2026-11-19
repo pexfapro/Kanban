@@ -21,7 +21,17 @@ section for today's day type.
   Daily Processing) *are* sorted out of Habits each day (Paul, Session 2).
 - Subtasks are never moved on their own; they follow their parent.
 - The script only changes a task's section, and deletes past override tasks.
-  It never edits content, due dates, recurrence or completion.
+  It never edits content, due dates, recurrence or completion. One
+  exception: the **status card** (below), a task the script creates and
+  owns.
+
+## Status card
+One uncompletable task (title starts `* `, so no checkbox) with no section,
+so it sits in the board's first column, e.g.
+`🏠 WFH day · Thu 19 Nov (weekly pattern)` or `… (override)`. Found by the
+marker "Managed by the day-type sorter" in its description. Created if
+missing, retitled when the day changes, never moved. If it is deleted, the
+next run makes a new one.
 
 ## 1. Slot line (stored on each task)
 One line anywhere in the task description:
