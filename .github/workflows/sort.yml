@@ -1,0 +1,35 @@
+# Sorts the Todoist Routine board by today's day type. See DESIGN.md.
+name: Sort Routine board
+
+on:
+  schedule:
+    # Hourly 04:07-10:07 UTC = from 05:07 London time in both GMT and BST.
+    # Minute 7, not 0: GitHub delays many jobs queued on the hour.
+    - cron: "7 4-10 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (show planned moves only)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sort-routine
+  cancel-in-progress: false
+
+jobs:
+  sort:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: python3 -m unittest
+      - name: Sort board
+        env:
+          TODOIST_API_TOKEN: ${{ secrets.TODOIST_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+        run: python3 sorter.py

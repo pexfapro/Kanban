@@ -4,7 +4,9 @@ import datetime as dt
 import io
 import json
 import unittest
-from contextlib import redirect_stdout
+import urllib.error
+from contextlib import redirect_stderr, redirect_stdout
+from unittest import mock
 from pathlib import Path
 
 import sorter
@@ -155,3 +157,47 @@ class Cli(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Retry(unittest.TestCase):
+    """The API client retries brief Todoist outages (fake network, no sleep)."""
+
+    def call(self, responses, method="GET"):
+        calls = []
+
+        def fake_urlopen(req, timeout):
+            calls.append(req)
+            r = responses.pop(0)
+            if isinstance(r, Exception):
+                raise r
+            return io.BytesIO(r)
+
+        err = io.StringIO()
+        with mock.patch("urllib.request.urlopen", fake_urlopen), \
+             mock.patch("time.sleep"), redirect_stderr(err):
+            result = sorter.Todoist("t")._request(method, "/x")
+        return result, len(calls)
+
+    @staticmethod
+    def http(code):
+        return urllib.error.HTTPError("u", code, "err", {}, io.BytesIO(b""))
+
+    def test_server_error_then_success(self):
+        result, n = self.call([self.http(502), self.http(503), b'{"ok": 1}'])
+        self.assertEqual((result, n), ({"ok": 1}, 3))
+
+    def test_network_error_retried(self):
+        result, n = self.call([urllib.error.URLError("reset"), b"{}"])
+        self.assertEqual((result, n), ({}, 2))
+
+    def test_gives_up_after_all_attempts(self):
+        with self.assertRaises(SystemExit):
+            self.call([self.http(503)] * (len(sorter.RETRY_WAITS) + 1))
+
+    def test_client_error_not_retried(self):
+        with self.assertRaises(SystemExit):
+            self.call([self.http(403), b"{}"])
+
+    def test_repeat_delete_404_counts_as_done(self):
+        result, n = self.call([self.http(502), self.http(404)], "DELETE")
+        self.assertEqual((result, n), (None, 2))

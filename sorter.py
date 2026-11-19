@@ -23,6 +23,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -32,6 +33,7 @@ from zoneinfo import ZoneInfo
 
 API_BASE = "https://api.todoist.com/api/v1"
 NOT_TODAY = "Not today"
+RETRY_WAITS = (5, 15, 45)  # seconds between attempts on a transient error
 DAY_TYPES = ("office", "wfh", "off")
 WEEKDAYS = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 
@@ -201,14 +203,27 @@ class Todoist:
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json",
         })
-        try:
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                raw = resp.read()
-        except urllib.error.HTTPError as e:
-            detail = e.read().decode(errors="replace")[:300]
-            raise SystemExit(f"Todoist API {method} {path} failed: "
-                             f"HTTP {e.code} {detail}")
-        return json.loads(raw) if raw else None
+        # Todoist sometimes returns a brief 502/503 (seen at go-live). Retry
+        # server errors, rate limits and network failures before giving up.
+        # Every call is safe to repeat: a move to the section a task is
+        # already in changes nothing, and a repeated delete gets a 404.
+        for attempt, wait in enumerate(RETRY_WAITS + (None,)):
+            try:
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    raw = resp.read()
+                return json.loads(raw) if raw else None
+            except urllib.error.HTTPError as e:
+                if method == "DELETE" and e.code == 404 and attempt > 0:
+                    return None  # an earlier attempt deleted it
+                retryable = e.code == 429 or e.code >= 500
+                error = f"HTTP {e.code} {e.read().decode(errors='replace')[:300]}"
+            except (urllib.error.URLError, TimeoutError) as e:
+                retryable, error = True, str(e)
+            if not retryable or wait is None:
+                raise SystemExit(f"Todoist API {method} {path} failed: {error}")
+            print(f"  retry   {method} {path}: {error.strip()}; "
+                  f"waiting {wait}s", file=sys.stderr)
+            time.sleep(wait)
 
     def _list(self, path, params):
         """GET a paginated list endpoint ({results, next_cursor})."""
