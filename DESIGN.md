@@ -16,9 +16,12 @@ section for today's day type.
 - Todoist project **Routine** only (`6gm33Rmg3w725pq3`). Other projects later.
 - Sections used: Morning, Afternoon, Evening, Wind down, Anytime, plus a new
   **Not today** section (last on the board) for tasks that don't apply today.
-- Tasks with no slot line are never touched (e.g. the Habits section).
-- The script only changes a task's section. It never edits content, due dates,
-  recurrence or completion.
+- Tasks with no slot line are never touched (e.g. `1000>1` in Habits, Weekly
+  review, Someday review). Habits tasks that have a slot line (Read, YNAB,
+  Daily Processing) *are* sorted out of Habits each day (Paul, Session 2).
+- Subtasks are never moved on their own; they follow their parent.
+- The script only changes a task's section, and deletes past override tasks.
+  It never edits content, due dates, recurrence or completion.
 
 ## 1. Slot line (stored on each task)
 One line anywhere in the task description:
@@ -30,7 +33,10 @@ office: evening | wfh: afternoon | off: morning
 - Day-type keys: `office`, `wfh`, `off` (emoji 🏢 🏠 🌴 also accepted).
 - Slot values: `morning`, `afternoon`, `evening`, `wind down`, `anytime`,
   or `skip` → goes to **Not today**.
-- Case-insensitive. A day type missing from the line → task left where it is.
+- Case-insensitive. `·` also works as a separator; `wind-down` and
+  `winddown` mean `wind down`. A day type missing from the line → task left
+  where it is. An unknown slot value is reported and ignored.
+- Convention: put the slot line last in the description, after a blank line.
 
 ## 2. Working out today's day type
 Precedence, highest first:
@@ -62,8 +68,12 @@ Time zone: Europe/London.
 ## Open items
 - [x] Weekly pattern: Mon office, Tue WFH, Wed office, Thu WFH, Fri office.
 - [x] Slot guesses on the concept page accepted as the starting point.
-- [ ] Verify current Todoist API endpoints for listing tasks and moving a task
-      to another section before writing the client.
+- [x] Todoist API: unified v1, base `https://api.todoist.com/api/v1`,
+      `Authorization: Bearer <token>`. Confirmed live in Session 2:
+      `GET /sections?project_id=` and `GET /tasks?project_id=` (paginated
+      `{results, next_cursor}`; fields `section_id`, `parent_id`, `due.date`,
+      `added_at`). Not yet exercised: `POST /tasks/{id}/move`
+      `{"section_id"}` and `DELETE /tasks/{id}`; first used at go-live.
 
 ## Later
 - Calendar day-type source (see step 2 above).

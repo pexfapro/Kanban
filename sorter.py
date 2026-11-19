@@ -274,6 +274,8 @@ def main(argv=None):
     print(f"{len(tasks)} tasks, {len(sections)} sections")
     for a in actions:
         title = a.task["content"]
+        if len(title) > 50:
+            title = title[:47] + "..."
         if a.kind == "move":
             current = section_names.get(a.task.get("section_id"), "(no section)")
             print(f"  move    {title!r}: {current} -> {a.section}  [{a.reason}]")
