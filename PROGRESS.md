@@ -21,6 +21,12 @@ summer). Now in a week of real use before tuning.
     `TODOIST_API_TOKEN` repo secret. First GitHub run: success, 0 changes.
   - Overrides need no Shortcut: Todoist Quick Add `Day: off #Routine fri`
     files the task correctly (tested with 25 Dec, then deleted).
+  - Failure alerts: GitHub iPhone app, Workflow Runs + Failed Workflows
+    Only. Tested with a deliberate failing run (#3, session branch, reverted);
+    the push arrived.
+  - Week-1 aids: Inbox task "Sorter notes" (comment on it when a card lands
+    wrong); one-off scheduled review Thu 26 Nov 12:40 sends a report and
+    the Session 4 prompt.
 - Earlier (Sessions 1-2, 19 Nov 2026): design agreed (DESIGN.md); `sorter.py`
   built with offline tests; Not today section and slot lines set up in
   Todoist; live dry runs matched the concept table.
