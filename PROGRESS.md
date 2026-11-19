@@ -11,11 +11,10 @@
 
 ## Next: Session 2, build the sorter (dry run only)
 1. Write `sorter.py`: parse slot lines, resolve day type (override task,
-   ICS calendar, weekly pattern), plan moves, print them.
-2. Test the ICS parsing against a sample .ics file with all-day events.
-3. Get a Todoist API token into the session (request_credential for
+   then weekly pattern), plan moves, print them.
+2. Get a Todoist API token into the session (request_credential for
    api.todoist.com) and run a dry run against the real Routine project.
-4. Create the **Not today** section and add slot lines to the Routine tasks.
+3. Create the **Not today** section and add slot lines to the Routine tasks.
 
 ## Session 3, go live
 - Add the `TODOIST_API_TOKEN` repo secret, add the workflow, switch off dry run.
