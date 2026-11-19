@@ -4,15 +4,10 @@
 - Agreed approach: keep Todoist; a scheduled script sorts the Routine board by
   day type. See DESIGN.md.
 - Decisions made by Paul:
-  1. Day type: Todoist override task > all-day Outlook event > weekly pattern.
-     Calendar check included from the start (changed in Session 1).
+  1. Day type: Todoist override task > weekly pattern. All-day Outlook
+     event check deferred until after go-live.
   2. Runs on GitHub Actions in this repo.
   3. Routine project only for now.
-
-## Before Session 2 (Paul)
-- Publish the Outlook calendar as an ICS link (see chat, 19 Nov). Keep the
-  link private: it goes in a GitHub secret in Session 3.
-- Create a test all-day event called WFH on an office day to try it out.
 
 ## Next: Session 2, build the sorter (dry run only)
 1. Write `sorter.py`: parse slot lines, resolve day type (override task,
@@ -23,7 +18,10 @@
 4. Create the **Not today** section and add slot lines to the Routine tasks.
 
 ## Session 3, go live
-- Add the `TODOIST_API_TOKEN` and `CALENDAR_ICS_URL` repo secrets, add the workflow, switch off dry run.
+- Add the `TODOIST_API_TOKEN` repo secret, add the workflow, switch off dry run.
 - iPhone Shortcut or Todoist template for creating a `Day: …` override task.
 
 ## Session 4, tune after a week of use
+
+## Later
+- Add the Outlook all-day event check (DESIGN.md, step 2).
