@@ -41,12 +41,12 @@ summer). Now in a week of real use before tuning.
 - 19 Nov 2026: Runs on GitHub Actions in this repo; Routine project only.
 - 19 Nov 2026: Read, YNAB and Daily Processing get slot lines and leave
   Habits each day; `1000>1` stays put.
-- 19 Nov 2026: Add a status card showing today's day type - because the
-  board gave no sign of which day it was sorted for. The card is the one
-  task whose content the script edits.
 - 19 Nov 2026: Create a `main` branch and make it the default - because
   scheduled workflows only run from the default branch, and the old default
   was Session 1's design-only branch.
+- 19 Nov 2026: Add a status card showing today's day type - because the
+  board gave no sign of which day it was sorted for. The card is the one
+  task whose content the script edits.
 
 ## Next steps
 1. Use it for a week. Note any card that lands in the wrong slot, and any
